@@ -34,7 +34,7 @@ void write_vrml_header()
 {
 	fout << "#VRML V2.0 utf8" << endl ;
 	fout << "#      ^^^^^  this is the MANDATORY header line" << endl ;
-	fout << "# Version 0.6" << endl ;
+	fout << "# Version 0.7" << endl ;
 	fout << "# 2015 Frederic Guichard" << endl ;
 	fout << "# fred_fr" << endl ;
 	fout << "#" << endl ;
@@ -42,10 +42,11 @@ void write_vrml_header()
 }
 void write_vrml_axes()
 {
+	fout << "# axe Y" << endl;
 	fout << "DEF nyil Group {" << endl ;
 	fout << "children [	" << endl ;
 	fout << "Transform {" << endl ;
-	fout << "translation 0.5 -1 0.0" << endl ;
+	fout << "translation 0.5 1 0.0" << endl ;
 	fout << "children ["<< endl ;
 	fout << "		Shape {" << endl ;
 	fout << "		appearance Appearance {" << endl ;
@@ -70,7 +71,7 @@ void write_vrml_axes()
 
 	fout << "Transform {" << endl ;
 	fout << "   rotation 0 0 1 -1.57" << endl ;
-	fout << "	translation 1 -1 0" << endl ;
+	fout << "	translation -1 2 0" << endl ;
 	fout << "	children [ USE nyil ]" << endl ;
 	fout << "}" << endl ;
 	fout << "#" << endl ;
@@ -81,7 +82,7 @@ void write_vrml_camera () {
 	// for revert z Axe"
     fout << "Viewpoint {" << endl ;
     fout << "        position        0 0 10" << endl ;
-    fout << "        orientation     0 0 1 3.2" << endl ;
+    fout << "        orientation     0 0 0 0" << endl ;
     fout << "}" << endl ;
 	fout << "#" << endl ;
 }
@@ -269,12 +270,16 @@ void convert_cube()
     for (xpath_node_set::const_iterator it = cube.begin(); it != cube.end(); ++it)
     {
         xpath_node node = *it;
-		float cube_dimx = stof (node.node().attribute("dimx").value()) * scale ;
+		cout << "\t- debut " << endl;
+		float cube_dimx = stof (node.node().attribute("dimy").value()) * scale ;
+		cout << "\t x = " << cube_dimx << endl;
 		float cube_dimy = stof (node.node().attribute("dimz").value()) * scale ;
-		float cube_dimz = stof (node.node().attribute("dimy").value()) * scale ;
-		float cube_offsetx = stof (node.node().attribute("offsetx").value()) * scale ;
-		float cube_offsety = stof (node.node().attribute("offsetz").value()) * scale ;
-		float cube_offsetz = stof (node.node().attribute("offsety").value()) * scale ;
+		cout << "\t x = " << cube_dimy << endl;
+		float cube_dimz = stof (node.node().attribute("dimx").value()) * scale ;
+		cout << "\t x = " << cube_dimz << endl;
+		float cube_offsetx = stof (node.node().attribute("offsety").value()) * scale ;
+		float cube_offsety = stof (node.node().attribute("offsetz").value()) * scale * -1;
+		float cube_offsetz = stof (node.node().attribute("offsetx").value()) * scale * -1;
 		string cube_name = node.node().attribute("name").value() ; 
 		cout << "\t- " << cube_name << endl ;
 		cube_name = ReplaceAll(cube_name," ","-");
@@ -325,14 +330,16 @@ int _tmain(int argc, _TCHAR* argv[])
     if (result)
     {
 		// Write VRML File Header
+		cout << endl << "Write VRML File Header" << endl ;
 		write_vrml_header();
 		// Create ARM boxe
 		convert_arm();
 		// write axes
-		write_vrml_axes();	
+		write_vrml_axes();
 		// Create cube
 		convert_cube();
-		write_vrml_camera ();	
+		cout << endl << "write_vrml_camera" << endl;
+		write_vrml_camera ();
     } else {
 	   return -1;
 	}
