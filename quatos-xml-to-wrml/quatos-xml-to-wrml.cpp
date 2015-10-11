@@ -1,6 +1,6 @@
 // quatos-xml-to-wrml.cpp : Defines the entry point for the console application.
 //
-// version Version 0.6
+// version Version 0.7
 
 #include "stdafx.h"
 #include <fstream>
@@ -103,16 +103,14 @@ void convert_custom_motors()
 	
 		float motor_x = stof (motor_xy.substr(0,pos_comma)) ; 
 		float motor_y = stof (motor_xy.substr(pos_comma+1)) ;
-		float arm_length = sqrt ( motor_x * motor_x + motor_y * motor_y ) * scale  ;
+		float arm_length = sqrt ( motor_x * motor_x + motor_y * motor_y ) * scale;
 		float arm_angle = atan2(motor_y,motor_x);
-		
-		// fout << "#     motor_x=" << motor_x << ", motor_y=" << motor_y << ", arm_length=" << arm_length << ", arm_angle=" << arm_angle << endl;
-
+		cout << arm_num << ":      motor_x=" << motor_x << ", motor_y=" << motor_y << ", arm_length=" << arm_length << ", arm_angle=" << arm_angle << endl;
 		fout << "DEF Shell=-:-ARM-" << arm_num << " Group {" << endl;
 		fout << "children [" << endl;
 		fout << "Transform {" << endl;
-		fout << "   translation " << motor_x * scale / -2.0 << " 0 " << motor_y * scale / 2.0 << endl;
-		fout << "   rotation 0 1 0 " << arm_angle << endl;
+		fout << "   translation " << motor_y * scale / 2.0 << " 0 " << motor_x * scale / -2.0 << endl;
+		fout << "   rotation 0 1 0 " << arm_angle  << endl;
 		fout << "   children [" << endl;
 		fout << "   Shape {" << endl;
 		fout << "    	appearance Appearance { material Material { diffuseColor 1 1 1  } }" << endl;
@@ -131,8 +129,6 @@ void convert_arm()
 	float arm_length ;
 	string frame_type ;
 
-	
-
 	xpath_node node = doc.select_single_node("quatos_configuration/craft");
 	if (node) {
 		frame_type = node.node().attribute("config").value();
@@ -149,8 +145,8 @@ void convert_arm()
 				fout <<  "DEF Shell=-:-ARM_" << i << " Group {" << endl ;
 				fout <<  "children [" << endl ;
 				fout <<  "Transform {" << endl ;
-				fout <<  "   translation " << cos(0.78 + 1.57 * i) * arm_length / -2.0 << " 0 " << sin(0.78 + 1.57 * i) * arm_length / 2.0 << endl;
-				fout <<  "   rotation 0 1 0 " << 0.78 + 1.57 * i << endl ;
+				fout <<  "   translation " << sin(-0.78 + 1.57 * i) * arm_length / 2.0 << " 0 " << cos(-0.78 + 1.57 * i) * arm_length / -2.0 << endl;
+				fout <<  "   rotation 0 1 0 " << -0.78 + 1.57 * i << endl ;
 				fout <<  "   children[" << endl ;
 				fout <<  "   Shape {" << endl ;
 				fout <<  "    	appearance Appearance { material Material { diffuseColor 1 1 1  } }" << endl ;
@@ -167,8 +163,8 @@ void convert_arm()
 				fout <<  "DEF Shell=-:-ARM_" << i << " Group {" << endl ;
 				fout <<  "children [" << endl ;
 				fout <<  "Transform {" << endl ;
-				fout <<  "   translation " << cos(1.57 * i) * arm_length / -2.0 << " 0 " << sin(1.57 * i) * arm_length / 2.0 << endl;
-				fout <<  "   rotation 0 1 0 " << 1.57 * i << endl ;
+				fout <<  "   translation " << sin(1.57 * i) * arm_length / 2.0 << " 0 " << cos(1.57 * i) * arm_length / -2.0 << endl;
+				fout <<  "   rotation 0 1 0 " << -1.57 + 1.57 * i << endl ;
 				fout <<  "   children[" << endl ;
 				fout <<  "   Shape {" << endl ;
 				fout <<  "    	appearance Appearance { material Material { diffuseColor 1 1 1  } }" << endl ;
@@ -182,15 +178,16 @@ void convert_arm()
 		}
 		if ( frame_type == "hex_x" ) {
 			for (int i=0; i<6; i++) {
+				//cout << i << endl;
 				fout <<  "DEF Shell=-:-ARM_" << i << " Group {" << endl ;
 				fout <<  "children [" << endl ;
 				fout <<  "Transform {" << endl ;
-				fout <<  "   translation " << cos(0.52 + 1.05 * i) * arm_length / -2.0 << " 0 " << sin(0.52 + 1.05 * i) * arm_length / 2.0 << endl;
-				fout <<  "   rotation 0 1 0 " << 0.52 + 1.05 * i << endl ;
-				fout <<  "   children[" << endl ;
-				fout <<  "   Shape {" << endl ;
-				fout <<  "    	appearance Appearance { material Material { diffuseColor 1 1 1  } }" << endl ;
-				fout <<  "		geometry Box { size " << arm_length << " " << arm_length / 50.0 << " " << arm_length / 25.0 << "}" << endl ;
+				fout << "   translation " << sin(-0.53 + 1.05 * i) * arm_length / 2.0 << " 0 " << cos(-0.53 + 1.05 * i) * arm_length / -2.0 << endl;
+				fout << "   rotation 0 1 0 " << 2.09 - 1.05 * i << endl;
+				fout << "   children[" << endl;
+				fout << "   Shape {" << endl;
+				fout << "    	appearance Appearance { material Material { diffuseColor 1 1 1  } }" << endl;
+				fout << "		geometry Box { size " << arm_length << " " << arm_length / 50.0 << " " << arm_length / 25.0 << "}" << endl;
 				fout <<  "	  }" << endl ;
 				fout <<  "	]" << endl ;
 				fout <<  "}" << endl ;
@@ -198,18 +195,18 @@ void convert_arm()
 				fout <<  "}" << endl ;
 			}
 		}
-
 		if ( frame_type == "hex_plus" ) {
 			for (int i=0; i<6; i++) {
+
 				fout <<  "DEF Shell=-:-ARM_" << i << " Group {" << endl ;
 				fout <<  "children [" << endl ;
 				fout <<  "Transform {" << endl ;
-				fout <<  "   translation " << cos(1.05 * i) * arm_length / -2.0 << " 0 " << sin(1.05 * i) * arm_length / 2.0 << endl;
-				fout <<  "   rotation 0 1 0 " << 1.05 * i << endl ;
+				fout << "   translation " << sin(1.05 * i) * arm_length / 2.0 << " 0 " << cos(1.05 * i) * arm_length / -2.0 << endl;
+				fout << "   rotation 0 1 0  " << 1.59 - 1.05 * i << endl;
 				fout <<  "   children[" << endl ;
 				fout <<  "   Shape {" << endl ;
 				fout <<  "    	appearance Appearance { material Material { diffuseColor 1 1 1  } }" << endl ;
-				fout <<  "		geometry Box { size " << arm_length << " " << arm_length / 50.0 << " " << arm_length / 25.0 << "}" << endl ;
+				fout << "		geometry Box { size " << arm_length << " " << arm_length / 50.0 << " " << arm_length / 25.0 << "}" << endl;
 				fout <<  "	  }" << endl ;
 				fout <<  "	]" << endl ;
 				fout <<  "}" << endl ;
@@ -223,12 +220,12 @@ void convert_arm()
 				fout <<  "DEF Shell=-:-ARM_" << i << " Group {" << endl ;
 				fout <<  "children [" << endl ;
 				fout <<  "Transform {" << endl ;
-				fout <<  "   translation " << cos(0.39 + 0.78 * i) * arm_length / -2.0 << " 0 " << sin(0.39 + 0.78 * i) * arm_length / 2.0 << endl;
-				fout <<  "   rotation 0 1 0 " << 0.39 + 0.78 * i << endl ;
-				fout <<  "   children[" << endl ;
-				fout <<  "   Shape {" << endl ;
-				fout <<  "    	appearance Appearance { material Material { diffuseColor 1 1 1  } }" << endl ;
-				fout <<  "		geometry Box { size " << arm_length << " " << arm_length / 50.0 << " " << arm_length / 25.0 << "}" << endl ;
+				fout << "   translation " << sin(-0.39 + 0.78 * i) * arm_length / 2.0 << " 0 " << cos(-0.39 + 0.78 * i) * arm_length / -2.0 << endl;
+				fout << "   rotation 0 1 0  " << 1.98 - 0.78 * i << endl;
+				fout << "   children[" << endl;
+				fout << "   Shape {" << endl;
+				fout << "    	appearance Appearance { material Material { diffuseColor 1 1 1  } }" << endl;
+				fout << "		geometry Box { size " << arm_length << " " << arm_length / 50.0 << " " << arm_length / 25.0 << "}" << endl;
 				fout <<  "	  }" << endl ;
 				fout <<  "	]" << endl ;
 				fout <<  "}" << endl ;
@@ -241,12 +238,12 @@ void convert_arm()
 				fout <<  "DEF Shell=-:-ARM_" << i << " Group {" << endl ;
 				fout <<  "children [" << endl ;
 				fout <<  "Transform {" << endl ;
-				fout <<  "   translation " << cos(0.78 * i) * arm_length / -2.0 << " 0 " << sin(0.78 * i) * arm_length / 2.0 << endl;
-				fout <<  "   rotation 0 1 0 " << 0.78 * i << endl ;
-				fout <<  "   children[" << endl ;
-				fout <<  "   Shape {" << endl ;
-				fout <<  "    	appearance Appearance { material Material { diffuseColor 1 1 1  } }" << endl ;
-				fout <<  "		geometry Box { size " << arm_length << " " << arm_length / 50.0 << " " << arm_length / 25.0 << "}" << endl ;
+				fout << "   translation " << sin(0.78 * i) * arm_length / 2.0 << " 0 " << cos(0.78 * i) * arm_length / -2.0 << endl;
+				fout << "   rotation 0 1 0  " << 1.59 - 0.78 * i << endl;
+				fout << "   children[" << endl;
+				fout << "   Shape {" << endl;
+				fout << "    	appearance Appearance { material Material { diffuseColor 1 1 1  } }" << endl;
+				fout << "		geometry Box { size " << arm_length << " " << arm_length / 50.0 << " " << arm_length / 25.0 << "}" << endl;
 				fout <<  "	  }" << endl ;
 				fout <<  "	]" << endl ;
 				fout <<  "}" << endl ;
@@ -270,13 +267,13 @@ void convert_cube()
     for (xpath_node_set::const_iterator it = cube.begin(); it != cube.end(); ++it)
     {
         xpath_node node = *it;
-		cout << "\t- debut " << endl;
+		//cout << "\t- debut " << endl;
 		float cube_dimx = stof (node.node().attribute("dimy").value()) * scale ;
-		cout << "\t x = " << cube_dimx << endl;
+		//cout << "\t x = " << cube_dimx << endl;
 		float cube_dimy = stof (node.node().attribute("dimz").value()) * scale ;
-		cout << "\t x = " << cube_dimy << endl;
+		//cout << "\t x = " << cube_dimy << endl;
 		float cube_dimz = stof (node.node().attribute("dimx").value()) * scale ;
-		cout << "\t x = " << cube_dimz << endl;
+		//cout << "\t x = " << cube_dimz << endl;
 		float cube_offsetx = stof (node.node().attribute("offsety").value()) * scale ;
 		float cube_offsety = stof (node.node().attribute("offsetz").value()) * scale * -1;
 		float cube_offsetz = stof (node.node().attribute("offsetx").value()) * scale * -1;
